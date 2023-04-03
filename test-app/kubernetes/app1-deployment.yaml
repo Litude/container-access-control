@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app1-deployment
+spec:
+  selector:
+    matchLabels:
+      app: node-app1
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: node-app1
+    spec:
+      containers:
+        - name: node-app1
+          image: tomras/thes-node-app1
+          ports:
+            - containerPort: 3000
+          env:
+          - name: APP2_SERVICE
+            value: node-app2-service
+        - name: node-app1a
+          image: tomras/thes-node-app1a
+          ports:
+            - containerPort: 4000
