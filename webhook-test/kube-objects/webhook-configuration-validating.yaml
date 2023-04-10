@@ -4,6 +4,7 @@ metadata:
   name: demo-webhook
 webhooks:
   - name: webhook-validating.webhook-test.svc
+    matchPolicy: Equivalent
     sideEffects: None
     admissionReviewVersions: ["v1"]
     clientConfig:
