@@ -1,4 +1,4 @@
-#tomras/validating-webhook
+#tomras/validating-webhook-refined
 FROM node:18
 
 WORKDIR /usr/src/app

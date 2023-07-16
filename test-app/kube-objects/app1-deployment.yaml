@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: node-app1
+      annotations:
+        iptables: "hello"
+        asd: "afefef"
     spec:
       containers:
         - name: node-app1

@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-app1-deployment
+spec:
+  selector:
+    matchLabels:
+      app: simple-app1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: simple-app1
+    spec:
+      containers:
+        - name: simple-app1
+          image: tomras/thes-node-simple
+          env:
+          - name: SERVER_PORT
+            value: "3000"
+          - name: SERVER_HOSTNAME
+            value: "0.0.0.0"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-app2-deployment
+spec:
+  selector:
+    matchLabels:
+      app: simple-app2
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: simple-app2
+    spec:
+      containers:
+        - name: simple-app2
+          image: tomras/thes-node-simple
+          env:
+          - name: SERVER_PORT
+            value: "4000"
+          - name: SERVER_HOSTNAME
+            value: "127.0.0.1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-app3-deployment
+spec:
+  selector:
+    matchLabels:
+      app: simple-app3
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: simple-app3
+        webhook-iptables: enabled
+    spec:
+      containers:
+        - name: simple-app3
+          image: tomras/thes-node-simple
+          env:
+          - name: SERVER_PORT
+            value: "5000"
+          - name: SERVER_HOSTNAME
+            value: "0.0.0.0"

@@ -21,6 +21,10 @@ spec:
           - name: PGUSER
             value: postgres
           - name: PGPASSWORD
-            value: ${DB_PASS}
+            valueFrom:
+              secretKeyRef:
+                name: database-postgresql
+                key: postgres-password
+                optional: false
           - name: DB_HOST
             value: database-postgresql

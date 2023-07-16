@@ -10,7 +10,7 @@ const app = express()
 
 const customInitContainer = Object.freeze({
     name: "iptables-initer",
-    image: "tomras/istio-iptables-clone",
+    image: process.env.WEBHOOK_INIT_CONTAINER || "tomras/istio-iptables-clone",
     securityContext: {
         capabilities: {
           add: [
@@ -71,8 +71,14 @@ app.post('/mutate-pods', (req, res) => {
         const originalObject = req.body.request.object
         const istioInitialized = originalObject.spec.initContainers && originalObject.spec.initContainers.some(container => container.name === "istio-init")
         console.log(`Istio has been initialized: ${istioInitialized}`)
+        // Only inject if this label exists, can be automatically added to all pods in namespace with the command:
+        // kubectl label namespace <namespace_name|default> webhook-iptables=enabled --overwrite
+        // Which is how istio does it
+        console.log(JSON.stringify(req.body))
+        const injectionEnabled = originalObject.metadata.labels['webhook-iptables'] === 'enabled'
+        console.log(`Status of injection: ${injectionEnabled}`)
 
-        if (istioInitialized) {
+        if (istioInitialized && injectionEnabled) {
             const modifiedObject = deepClone(originalObject)
             modifiedObject.spec.initContainers = [customInitContainer]
             const patches = compare(originalObject, modifiedObject)
@@ -96,16 +102,16 @@ app.post('/mutate-pods', (req, res) => {
         }
         else {
             //console.log(JSON.stringify(originalObject.spec))
-            const modifiedObject = deepClone(originalObject)
+            // const modifiedObject = deepClone(originalObject)
         
-            modifiedObject.metadata.labels['stuff'] = 'test'
+            // modifiedObject.metadata.labels['stuff'] = 'test'
         
-            const patches = compare(originalObject, modifiedObject)
-            console.log('Applying patch:')
-            console.log(patches)
+            // const patches = compare(originalObject, modifiedObject)
+            // console.log('Applying patch:')
+            // console.log(patches)
     
-            const encodedPatch = Buffer.from(JSON.stringify(patches)).toString("base64")
-            console.log(`Returning patch: ${encodedPatch}`)
+            // const encodedPatch = Buffer.from(JSON.stringify(patches)).toString("base64")
+            // console.log(`Returning patch: ${encodedPatch}`)
             return res.json(
                 {
                     apiVersion: "admission.k8s.io/v1",
@@ -113,8 +119,8 @@ app.post('/mutate-pods', (req, res) => {
                     response: {
                         uid: req.body.request.uid, 
                         allowed: true,
-                        patchType: "JSONPatch",
-                        patch: encodedPatch
+                        // patchType: "JSONPatch",
+                        // patch: encodedPatch
                     }
                 }
             )

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ip-app1-deployment
+spec:
+  selector:
+    matchLabels:
+      app: ip-app1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ip-app1
+      annotations:
+        iptables: >
+          -I INPUT -p tcp --dport 3000 -j ACCEPT;
+          -I INPUT -p tcp -s localhost --dport 4000 -j ACCEPT;
+          -I OUTPUT -p tcp -s localhost --dport 4000 -j ACCEPT;
+          -I INPUT -p tcp -s istio-proxy --dport 4000 -j REJECT;
+          -I OUTPUT -p tcp -s istio-proxy --dport 3000 -j ACCEPT;
+          -I OUTPUT -p tcp -d dns:app2-service.default --dport 3000 -j ACCEPT;
+    spec:
+      containers:
+        - name: ip-app1
+          image: tomras/ip-app1
+          ports:
+            - containerPort: 3000
+        - name: ip-app1a
+          image: tomras/ip-app1a
+          ports:
+            - containerPort: 4000

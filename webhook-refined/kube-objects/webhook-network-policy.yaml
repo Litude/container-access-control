@@ -1,0 +1,15 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-webhook-access-from-apiserver
+  namespace: elastic-system
+spec:
+  podSelector:
+    matchLabels:
+      control-plane: elastic-operator
+  ingress:
+  - from:
+      - ipBlock:
+          cidr: 10.1.0.1/32 # kubectl cluster-info
+    ports:
+      - port: 9443
