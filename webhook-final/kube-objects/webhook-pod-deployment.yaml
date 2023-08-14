@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iptables-lo-deployment
+  namespace: iptables-lo-system
+  labels:
+    app: iptables-lo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iptables-lo-app
+  template:
+    metadata:
+      labels:
+        app: iptables-lo-app
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1234
+      containers:
+      - name: server
+        image: tomras/iptables-lo-webhook
+        imagePullPolicy: Always
+        env:
+        - name: SECRET_DIR
+          value: /run/secrets/tls
+        ports:
+        - containerPort: 3080
+          name: webhook-port
+        volumeMounts:
+        - name: iptables-lo-tls-volume
+          mountPath: /run/secrets/tls
+          readOnly: true
+      volumes:
+      - name: iptables-lo-tls-volume
+        secret:
+          secretName: iptables-lo-tls-crt

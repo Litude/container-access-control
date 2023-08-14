@@ -1,30 +1,25 @@
 import http from 'http'
 
-const hostname = '0.0.0.0';
-const serviceUrl = process.env.APP2_SERVICE
-const port = 3000;
+const hostname = '127.0.0.1';
+const port = 4000;
 
 const server = http.createServer(async (req, res) => {
   try {
     const hasQuery = !!req.url.split('?')[1]
     if (hasQuery) {
-      const data = await fetch(`http://localhost:5000`)
-      if (!data.ok) {
-        throw new Error(await data.text())
-      }
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/plain');
-      res.end(await data.text());
+      res.end('Hello from container 2');
     }
     else {
-      const data = await fetch(`http://localhost:4000`)
+      const data = await fetch(`http://localhost:5000`)
       if (!data.ok) {
         throw new Error(await data.text())
       }
       const response = await data.text();
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/plain');
-      res.end(response);
+      res.end(`Forwarded message from container 3: ${response}`);
     }
 
   } catch (error) {

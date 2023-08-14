@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uid-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: uid-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: uid-app
+      annotations:
+        iptables: >
+          STRICT;
+          -I INPUT -p tcp -i lo --dport 3000 -j ACCEPT;
+          -I INPUT -p tcp -i lo --dport 4000 -j ACCEPT;
+          -I INPUT -p tcp -i lo --dport 5000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 3000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 4000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 5000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 5000 -m owner ! --uid-owner 4000 -j DROP;
+    spec:
+      containers:
+        - name: uid-app1a
+          image: tomras/uid-app1a
+          ports:
+            - containerPort: 3000
+          securityContext:
+            runAsUser: 3000
+            allowPrivilegeEscalation: false
+        - name: uid-app1b
+          image: tomras/uid-app1b
+          ports:
+            - containerPort: 4000
+          securityContext:
+            runAsUser: 4000
+            allowPrivilegeEscalation: false
+        - name: uid-app1c
+          image: tomras/uid-app1c
+          ports:
+            - containerPort: 5000
+          securityContext:
+            runAsUser: 5000
+            allowPrivilegeEscalation: false

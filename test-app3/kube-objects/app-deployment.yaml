@@ -13,6 +13,7 @@ spec:
         app: ip-app1
       annotations:
         iptables: >
+          STRICT
           -I INPUT -p tcp --dport 3000 -j ACCEPT;
           -I INPUT -p tcp -s localhost --dport 4000 -j ACCEPT;
           -I OUTPUT -p tcp -s localhost --dport 4000 -j ACCEPT;
