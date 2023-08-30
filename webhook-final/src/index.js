@@ -84,7 +84,7 @@ const createInitContainer = async (customRules, istioInitialized) => {
             rules.push(...ISTIO_RULES)
         }
     }
-    initContainer.args = rules.map(rule => `iptables ${rule}`).join(';')
+    initContainer.args = [rules.map(rule => `iptables ${rule}`).join(';')]
     return initContainer
 }
 
