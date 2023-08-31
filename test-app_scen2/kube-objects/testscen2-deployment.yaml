@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-scen2-app-deployment
+spec:
+  selector:
+    matchLabels:
+      app: test-scen2-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: test-scen2-app
+      annotations:
+        iptables: >
+          STRICT;
+          -I INPUT -p tcp -i lo --dport 3000 -j ACCEPT;
+          -I INPUT -p tcp -i lo --dport 4000 -j ACCEPT;
+          -I INPUT -p tcp -i lo --dport 5000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 3000 -m owner --uid-owner 1337 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 3000 -m owner --uid-owner 4000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 3000 -m owner --uid-owner 5000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 4000 -m owner --uid-owner 3000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 4000 -m owner --uid-owner 5000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 5000 -m owner --uid-owner 3000 -j ACCEPT;
+          -I OUTPUT -p tcp -o lo --dport 5000 -m owner --uid-owner 4000 -j ACCEPT;
+    spec:
+      containers:
+        - name: simple-app1
+          image: tomras/thes-node-simple
+          securityContext:
+            runAsUser: 3000
+          env:
+          - name: SERVER_PORT
+            value: "3000"
+          - name: SERVER_HOSTNAME
+            value: "0.0.0.0"
+        - name: simple-app2
+          image: tomras/thes-node-simple
+          securityContext:
+            runAsUser: 4000
+          env:
+          - name: SERVER_PORT
+            value: "4000"
+          - name: SERVER_HOSTNAME
+            value: "127.0.0.1"
+        - name: simple-app3
+          image: tomras/thes-node-simple
+          securityContext:
+            runAsUser: 5000
+          env:
+          - name: SERVER_PORT
+            value: "5000"
+          - name: SERVER_HOSTNAME
+            value: "0.0.0.0"

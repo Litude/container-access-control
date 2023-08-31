@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: uid-app2-vsvc
+spec:
+  hosts:
+  - uid-app2-service.default.svc.cluster.local
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: uid-app2-service
+        port:
+          number: 5000

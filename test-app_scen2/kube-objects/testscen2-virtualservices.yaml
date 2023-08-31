@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: simple-app1-vsvc
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - test-gateway
+  http:
+  - match:
+    - uri:
+        exact: /app1
+    route:
+    - destination:
+        host: test-scen2-app1-svc
+        port:
+          number: 3000
+  - match:
+    - uri:
+        exact: /app3
+    route:
+    - destination:
+        host: test-scen2-app3-svc
+        port:
+          number: 5000

@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uid-app2-deployment
+spec:
+  selector:
+    matchLabels:
+      app: uid-app2
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: uid-app2
+    spec:
+      containers:
+        - name: uid-app2
+          image: tomras/uid-app2
