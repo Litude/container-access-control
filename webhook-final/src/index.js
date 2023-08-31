@@ -11,15 +11,15 @@ const app = express()
 
 // Drop all inbound and outbound connections by default but allow established
 const DEFAULT_RULES = [
-    "-A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
-    "-A OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
-    "-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+    "-A INPUT -i lo -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+    "-A OUTPUT -o lo -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
+    "-A FORWARD -i lo -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT",
     // If logging is needed
     // "-A INPUT -i lo -m limit --limit 5/min -j LOG --log-prefix 'IPTABLES INPUT DROPPED:'",
     // "-A OUTPUT -o lo -m limit --limit 5/min -j LOG --log-prefix 'IPTABLES OUTPUT DROPPED:'",
     "-A INPUT -i lo -j DROP",
-    "-A FORWARD -i lo -j DROP",
     "-A OUTPUT -o lo -j DROP",
+    "-A FORWARD -i lo -j DROP",
 ]
 
 const ISTIO_RULES = [
